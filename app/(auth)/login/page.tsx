@@ -1,8 +1,7 @@
 import Logo from '@/components/assets/logo';
 
-import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+
 import CardWrapper from '@/components/auth/card-wrapper';
 import LoginForm from '@/components/auth/login-form';
 
