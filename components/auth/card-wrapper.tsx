@@ -1,11 +1,13 @@
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import Logo from '@/components/assets/logo';
 
 export default function CardWrapper({
   title,
+  description,
   children,
 }: {
   title: string;
+  description?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -14,6 +16,12 @@ export default function CardWrapper({
         <Logo classes="mx-auto mb-4" />
         {title}
       </CardTitle>
+      {description && (
+        <CardDescription>
+          <p className="mx-auto text-center text-stone-500 -mt-5">{description}</p>
+        </CardDescription>
+      )}
+
       <CardContent>{children}</CardContent>
     </Card>
   );
