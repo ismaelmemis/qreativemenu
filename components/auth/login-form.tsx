@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button';
 
 import { loginSchema } from '@/lib/schemas';
 import FormError from '@/components/auth/form-error';
-import FormSuccess from '@/components/auth/form-success';
 
 export default function LoginForm() {
   const [error, setError] = useState<string | undefined>(undefined);
