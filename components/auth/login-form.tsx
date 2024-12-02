@@ -19,7 +19,7 @@ import FormSuccess from '@/components/auth/form-success';
 
 export default function LoginForm() {
   const [error, setError] = useState<string | undefined>(undefined);
-  const [success, setSuccess] = useState<string | undefined>(undefined);
+  // const [success, setSuccess] = useState<string | undefined>(undefined);
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -32,12 +32,14 @@ export default function LoginForm() {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setError('');
-    setSuccess('');
+    // setSuccess('');
 
     startTransition(() => {
       login(values).then((data) => {
-        setError(data.error);
-        setSuccess(data.success);
+        if (data) {
+          setError(data.error);
+          // setSuccess(data?.success);
+        }
       });
     });
   };
@@ -81,7 +83,7 @@ export default function LoginForm() {
             />
           </div>
           <FormError message={error} />
-          <FormSuccess message={success} />
+          {/* <FormSuccess message={success} /> */}
           <Button
             type="submit"
             size={'lg'}

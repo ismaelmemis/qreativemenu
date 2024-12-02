@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 
 import CardWrapper from '@/components/auth/card-wrapper';
@@ -48,6 +50,12 @@ export default function Register() {
             </div>
           </div>
           <RegisterForm />
+          <div className="flex items-center justify-center text-sm mt-5">
+            <span className="mr-1">Zaten bir hesabınız mı var?</span>
+            <Link className="hover:text-orange-500 text-orange-500 font-semibold" href="/login">
+              Üye Girişi
+            </Link>
+          </div>
         </CardWrapper>
       </div>
     </div>

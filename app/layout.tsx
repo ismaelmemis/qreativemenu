@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: '"Menünüz her an cebinizde!"',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

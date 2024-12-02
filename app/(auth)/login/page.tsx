@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 
 import CardWrapper from '@/components/auth/card-wrapper';
 import LoginForm from '@/components/auth/login-form';
+import Link from 'next/link';
 
 export default function Login() {
   return (
@@ -65,6 +66,15 @@ export default function Login() {
               </div>
             </div>
             <LoginForm />
+            <div className="flex items-center justify-center text-sm mt-5">
+              <span className="mr-1">Henüz hesabınız yok mu?</span>
+              <Link
+                className="hover:text-orange-500 text-orange-500 font-semibold"
+                href="/register"
+              >
+                Üye Ol
+              </Link>
+            </div>
           </CardWrapper>
         </div>
       </div>
