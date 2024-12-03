@@ -7,22 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
-  password      String?
-  role          String?   @default("user")
-  plan          String?   @default("trial")
-  image         String?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  accounts      Account[]
-
-  @@map("users")
-}
-
 model Account {
   id                String   @id @default(cuid())
   userId            String   @map("user_id")
@@ -42,4 +26,160 @@ model Account {
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
+}
+
+enum UserRole {
+  ADMIN
+  OWNER
+  STAFF
+  USER
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?     @map("email_verified")
+  password      String?
+  role          UserRole?     @default(USER)
+  plan          String?       @default("trial")
+  image         String?
+  country       String?
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  accounts      Account[]
+  subscription  Subscription?
+  venues        Venue[]
+
+  @@map("users")
+}
+
+model Subscription {
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @unique
+  plan      PlanType
+  startDate DateTime
+  endDate   DateTime?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum PlanType {
+  FREE
+  BASIC
+  PROFESSIONAL
+  PREMIUM
+}
+
+// Venue Model
+model Venue {
+  id            String   @id @default(cuid())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String   @unique
+  name          String
+  description   String?
+  address       String?
+  phone         String?
+  email         String?
+  country       String?
+  logo          String?
+  coverLogo     String?
+  coverImage    String?
+  coverVideo    String?
+  wifiAddress   String?
+  wifiPassword  String?
+  themeSettings Json
+  openingHours  Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isActive      Boolean  @default(true)
+  menus         Menu[]
+  qrCode        QRCode?
+}
+
+enum QRCodePurpose {
+  MENU_VIEW
+  TABLE_ORDER
+  PAYMENT
+}
+
+// New QRCode model
+model QRCode {
+  id        String        @id @default(cuid())
+  venue     Venue         @relation(fields: [venueId], references: [id])
+  venueId   String        @unique
+  code      String        @unique // The actual QR code data or identifier
+  image     String? // URL to the generated QR code image
+  settings  Json
+  purpose   QRCodePurpose
+  session   Int?
+  isActive  Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+// Menu Model
+model Menu {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  callWaiter  Boolean    @default(false)
+  askBill     Boolean    @default(false)
+  Venue       Venue?     @relation(fields: [venueId], references: [id])
+  venueId     String?
+  Category    Category[]
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  note        String?
+  description String?
+  image       String?
+  labels      Json
+  order       Int        @default(0)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Menu        Menu?      @relation(fields: [menuId], references: [id])
+  menuId      String?
+  menuItem    MenuItem[]
+}
+
+model MenuItem {
+  id              String    @id @default(cuid())
+  name            String
+  description     String?
+  price           Decimal
+  image           String?
+  video           String?
+  allergens       String[]
+  ingredients     String[]
+  soldOut         Boolean   @default(false)
+  calories        Int?
+  nutritionInfo   Json?
+  grammage        String?
+  priceOptions    Json?
+  preparationTime Int?
+  isAvailable     Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  Category        Category? @relation(fields: [categoryId], references: [id])
+  categoryId      String?
+}
+
+// Table management
+model TableArea {
+  id       String  @id @default(cuid())
+  name     String
+  capacity Int
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

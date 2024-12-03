@@ -1,6 +1,7 @@
 import { type DefaultSession } from 'next-auth';
 import NextAuth, { User as NextAuthUser, Session } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
 
 import type { NextAuthConfig } from 'next-auth';
 
@@ -16,6 +17,7 @@ interface UserWithRole extends NextAuthUser {
 // Notice this is only an object, not a full Auth.js instance
 export default {
   providers: [
+    Google,
     Credentials({
       credentials: {
         email: {},
