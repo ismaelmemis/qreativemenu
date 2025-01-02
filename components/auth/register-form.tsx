@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { registerSchema } from '@/lib/schemas';
 import FormError from '@/components/auth/form-error';
 import FormSuccess from '@/components/auth/form-success';
+import { signIn } from 'next-auth/react';
 
 export default function RegisterForm() {
   const [error, setError] = useState<string | undefined>(undefined);
@@ -35,10 +36,15 @@ export default function RegisterForm() {
     setError('');
     setSuccess('');
 
-    startTransition(() => {
+    startTransition(async () => {
       register(values).then((data) => {
         setError(data.error);
         setSuccess(data.success);
+        signIn('credentials', {
+          email: values.email,
+          password: values.password,
+          redirectTo: '/signup/details',
+        });
       });
     });
   };

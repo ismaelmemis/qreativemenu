@@ -20,7 +20,7 @@ export default async function Login() {
           </div>
         </div>
         <img
-          alt=""
+          alt="unsplash"
           src="https://images.unsplash.com/photo-1710732652617-264d6f860546?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -77,10 +77,7 @@ export default async function Login() {
             <LoginForm />
             <div className="flex items-center justify-center text-sm mt-5">
               <span className="mr-1">Henüz hesabınız yok mu?</span>
-              <Link
-                className="hover:text-orange-500 text-orange-500 font-semibold"
-                href="/register"
-              >
+              <Link className="hover:text-orange-500 text-orange-500 font-semibold" href="/signup">
                 Üye Ol
               </Link>
             </div>

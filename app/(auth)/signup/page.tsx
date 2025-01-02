@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import CardWrapper from '@/components/auth/card-wrapper';
 import RegisterForm from '@/components/auth/register-form';
 
-export default function Register() {
+export default function Signup() {
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="mx-auto w-full max-w-md lg:max-w-[480px] 2xl:max-w-[480px] ">

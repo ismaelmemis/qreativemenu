@@ -6,6 +6,7 @@ import { db } from '@/lib/db';
 
 import { registerSchema } from '@/lib/schemas';
 import { getUserByEmail } from '@/lib/data';
+import { addDays } from '@/lib/dates';
 
 export const register = async (values: z.infer<typeof registerSchema>) => {
   const validatedFields = registerSchema.safeParse(values);
@@ -28,10 +29,15 @@ export const register = async (values: z.infer<typeof registerSchema>) => {
       name,
       email,
       password: hashedPassword,
+      subscription: {
+        create: {
+          startDate: new Date(),
+          endDate: addDays(new Date(), 7),
+          plan: 'FREE',
+        },
+      },
     },
   });
 
-  // TODO: Send verification token
-
-  return { success: 'Hesap Oluşturuldu' };
+  return { success: 'Hesap Oluşturuldu', email: email, password: password };
 };

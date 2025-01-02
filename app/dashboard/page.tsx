@@ -4,7 +4,7 @@ export default async function Dashboard() {
   const session = await auth();
 
   return (
-    <div>
+    <div className="py-8">
       {JSON.stringify(session)}
       <form
         action={async () => {
