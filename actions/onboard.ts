@@ -28,7 +28,7 @@ export const onboardingStepOne = async (
   venueName: string | undefined,
   venueId: string | undefined
 ) => {
-  const menu = await db.menu.create({
+  await db.menu.create({
     data: {
       name: `${venueName} İlk Menü`,
       Venue: {
@@ -39,5 +39,5 @@ export const onboardingStepOne = async (
     },
   });
 
-  console.log(menu);
+  // console.log(menu);
 };

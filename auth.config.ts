@@ -67,7 +67,7 @@ export default {
       return true;
     },
     jwt({ token, user }) {
-      console.log(token, 'token');
+      // console.log(token, 'token');
       if (user) {
         token.role = (user as UserWithRole).role;
         token.plan = (user as UserWithRole).plan;

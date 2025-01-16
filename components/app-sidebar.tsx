@@ -1,21 +1,21 @@
 'use client';
 
 import * as React from 'react';
+import { AudioWaveform, Command, GalleryVerticalEnd, LucideIcon } from 'lucide-react';
+
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from 'lucide-react';
+  PiLayout,
+  PiForkKnife,
+  PiQrCode,
+  PiSealPercent,
+  PiPicnicTable,
+  PiCallBell,
+  PiQuestion,
+  PiLifebuoy,
+} from 'react-icons/pi';
+import { IoAnalyticsOutline } from 'react-icons/io5';
 
 import { NavMain } from '@/components/nav-main';
-import { NavProjects } from '@/components/nav-projects';
 import { NavUser } from '@/components/nav-user';
 // import { TeamSwitcher } from '@/components/team-switcher';
 import {
@@ -25,6 +25,9 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import { NavMenu } from './nav-menu';
+import { NavSupport } from './nav-support';
+import { usePathname } from 'next/navigation';
 
 // This is sample data.
 const data = {
@@ -54,95 +57,62 @@ const data = {
     {
       title: 'Dashboard',
       url: '/dashboard',
-      icon: SquareTerminal,
-      isActive: true,
+      icon: PiLayout as LucideIcon,
     },
     {
-      title: 'Models',
-      url: '#',
-      icon: Bot,
-      items: [
-        {
-          title: 'Genesis',
-          url: '#',
-        },
-        {
-          title: 'Explorer',
-          url: '#',
-        },
-        {
-          title: 'Quantum',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Documentation',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Introduction',
-          url: '#',
-        },
-        {
-          title: 'Get Started',
-          url: '#',
-        },
-        {
-          title: 'Tutorials',
-          url: '#',
-        },
-        {
-          title: 'Changelog',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'General',
-          url: '#',
-        },
-        {
-          title: 'Team',
-          url: '#',
-        },
-        {
-          title: 'Billing',
-          url: '#',
-        },
-        {
-          title: 'Limits',
-          url: '#',
-        },
-      ],
+      title: 'Raporlar',
+      url: '/dashboard/analytics',
+      icon: IoAnalyticsOutline as LucideIcon,
     },
   ],
-  projects: [
+  navMenu: [
     {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame,
+      title: 'Menü Yönetimi',
+      url: '/dashboard/menu-management',
+      icon: PiForkKnife as LucideIcon,
     },
     {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart,
+      title: 'QR Kod Düzenle',
+      url: '/dashboard/qr-code',
+      icon: PiQrCode as LucideIcon,
     },
     {
-      name: 'Travel',
-      url: '#',
-      icon: Map,
+      title: 'Kampanyalar',
+      url: '/dashboard/campaigns',
+      icon: PiSealPercent as LucideIcon,
+    },
+    {
+      title: 'Masa Yönetimi',
+      url: '/dashboard/table-management',
+      icon: PiPicnicTable as LucideIcon,
+    },
+    {
+      title: 'Bildirimler',
+      url: '/dashboard/menu-notifications',
+      icon: PiCallBell as LucideIcon,
+    },
+  ],
+  navSupport: [
+    {
+      title: 'S.S.S',
+      url: '/dashboard/faq',
+      icon: PiQuestion as LucideIcon,
+      isActive: false,
+    },
+    {
+      title: 'Destek',
+      url: '/dashboard/support',
+      icon: PiLifebuoy as LucideIcon,
+      isActive: false,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+
+  React.useEffect(() => {}, []);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -166,9 +136,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </svg>
         </div>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+      <SidebarContent className="mt-6">
+        <NavMain items={data.navMain} path={pathname} />
+        <NavMenu items={data.navMenu} path={pathname} />
+        <NavSupport items={data.navSupport} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

@@ -12,12 +12,14 @@ const buttonVariants = cva(
         default: 'bg-zinc-700 text-primary-foreground shadow hover:bg-zinc-600',
         destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
         outline:
-          'border border-input bg-background shadow-sm hover:bg-stone-100 hover:text-accent-foreground',
+          'border border-stone-400 bg-background text-stone-500 shadow-sm hover:bg-stone-100 hover:text-stone-800',
         secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
+        ghost: 'hover:bg-orange-600/10 hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
         primary:
           'bg-[#e9622c] text-primary-foreground text-[15px] shadow hover:bg-[#e9622c]/90 font-medium',
+        alternative:
+          'border border-orange-600 bg-background text-orange-600 shadow-sm hover:bg-orange-600/10 hover:text-orange-600',
       },
       size: {
         default: 'h-9 px-4 py-2',

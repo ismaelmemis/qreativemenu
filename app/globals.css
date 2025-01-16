@@ -102,6 +102,11 @@
   }
 }
 
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px #fafaf9 inset !important; /* Change 'white' to your desired background color */
+  -webkit-text-fill-color: black !important; /* Change 'black' to your desired text color */
+}
+
 .mobile-phone {
   margin-top: 0px;
   padding: 10px 10px 30px;

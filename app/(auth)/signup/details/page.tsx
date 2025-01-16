@@ -1,9 +1,15 @@
+import { redirect } from 'next/navigation';
+
 import Logo from '@/components/assets/logo';
-import { auth } from '@/auth';
 import OnboardForm from '@/components/auth/onboard-form';
+import { auth } from '@/auth';
 
 export default async function OnboardPage() {
   const session = await auth();
+
+  if (!session) {
+    redirect('/login');
+  }
 
   return (
     <div className="flex min-h-screen overflow-y-hidden flex-1 relative">

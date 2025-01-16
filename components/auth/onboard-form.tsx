@@ -63,10 +63,10 @@ export default function OnboardForm({ id }: { id: string }) {
 
   const handleContinue = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(step);
+    // console.log(step);
     const result = await form.trigger(['venuename', 'phone', 'country']);
     if (result) {
-      console.log(step);
+      // console.log(step);
       setStep('second');
       return false;
     }
