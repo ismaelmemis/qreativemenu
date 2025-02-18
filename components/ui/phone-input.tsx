@@ -80,7 +80,7 @@ const CountrySelect = ({
         <Button
           type="button"
           variant="outline"
-          className="flex gap-1 rounded-e-none h-10 rounded-s-lg border-r-0 px-3 focus:z-10"
+          className="flex gap-1 rounded-e-none h-10 rounded-s-lg border-r-0 border-t-stone-200 border-l-stone-200 border-b-stone-200 px-3 focus:z-10"
           disabled={disabled}
         >
           <FlagComponent country={selectedCountry} countryName={selectedCountry} />

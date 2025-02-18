@@ -12,7 +12,7 @@ export const CustomDragPreview: React.FC<Props> = (props) => {
 
   return (
     <div
-      className={`bg-white/70 block flex border shadow-sm pl-2 py-3 rounded-md mb-1 items-center w-[600px]`}
+      className={`bg-white/70 flex border shadow-sm pl-2 py-3 rounded-md mb-1 items-center w-[600px]`}
     >
       <div className={` drag-handle ml-2 `}>
         <RxDragHandleDots2 className="text-zinc-500" />

@@ -27,20 +27,20 @@ import {
 } from '@/components/ui/sidebar';
 import { NavMenu } from './nav-menu';
 import { NavSupport } from './nav-support';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 // This is sample data.
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
+    name: 'Daniel Gallegos',
+    email: 'Ana Şube',
     avatar: '/avatars/shadcn.jpg',
   },
   teams: [
     {
-      name: 'Acme Inc',
+      name: 'Daniel Gallego',
       logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
+      plan: 'Ana Şube',
     },
     {
       name: 'Acme Corp.',
@@ -110,6 +110,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+  const router = useRouter();
 
   React.useEffect(() => {}, []);
 
@@ -117,7 +118,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         {/* <TeamSwitcher teams={data.teams} /> */}
-        <div className="px-2 pt-2 flex mr-auto">
+        <div
+          onClick={() => router.push('/dashboard')}
+          className="px-2 pt-2 flex mr-auto cursor-pointer"
+        >
           <svg
             className="w-full p-0"
             fill="none"
@@ -136,14 +140,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </svg>
         </div>
       </SidebarHeader>
-      <SidebarContent className="mt-6">
+      <SidebarContent className="mt-3">
+        <NavUser user={data.user} />
+        {/* <TeamSwitcher teams={data.teams} /> */}
         <NavMain items={data.navMain} path={pathname} />
         <NavMenu items={data.navMenu} path={pathname} />
         <NavSupport items={data.navSupport} />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
+      <SidebarFooter></SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

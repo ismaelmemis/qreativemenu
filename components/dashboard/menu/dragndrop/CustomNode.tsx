@@ -1,6 +1,8 @@
 'use client';
 
-import React, { RefObject } from 'react';
+import React, { RefObject, useEffect } from 'react';
+
+import Image from 'next/image';
 
 import type { NodeModel } from '@minoru/react-dnd-treeview';
 import styles from './CustomNode.module.css';
@@ -8,17 +10,26 @@ import styles from './CustomNode.module.css';
 import { RxDragHandleDots2 } from 'react-icons/rx';
 import { IoIosArrowDown } from 'react-icons/io';
 import { ChefHat } from 'lucide-react';
-import { PiPencil, PiTrash } from 'react-icons/pi';
+import { updateMenuCategory } from '@/actions/menu';
+import DeleteItem from '../menu-forms/delete-item';
+import DeleteCategory from '../menu-forms/deleteCategory';
+import { EditCategory } from '../menu-forms/edit-category';
+import EditItem from '../menu-forms/edit-item';
 // import { Switch } from '@/components/ui/switch';
 
+type CustomNodeData = {
+  image: string;
+};
+
 type Props = {
-  node: NodeModel;
+  node: NodeModel<CustomNodeData>;
   depth: number;
   isOpen: boolean;
   testIdPrefix?: string;
   handleRef: RefObject<HTMLDivElement>;
   onToggle: (id: NodeModel['id']) => void;
   setTreeData: unknown;
+  menuId: string;
 };
 
 export const CustomNode: React.FC<Props> = ({ testIdPrefix = '', ...props }) => {
@@ -27,8 +38,18 @@ export const CustomNode: React.FC<Props> = ({ testIdPrefix = '', ...props }) => 
     props.onToggle(props.node.id);
   };
 
-  const { id } = props.node;
+  const { id, text, data } = props.node;
   const indent = props.depth * 24;
+
+  async function updateParentCategory() {
+    updateMenuCategory(id.toString(), props.node.parent.toString());
+  }
+
+  useEffect(() => {
+    if (props.node.parent !== 0) {
+      updateParentCategory();
+    }
+  }, [props.node.parent]);
 
   return (
     <div
@@ -45,11 +66,20 @@ export const CustomNode: React.FC<Props> = ({ testIdPrefix = '', ...props }) => 
           >
             <RxDragHandleDots2 className="text-zinc-500" />
           </div>
-          <div className="size-11 2xl:size-12 ml-3 rounded-md bg-orange-600/20 flex items-center justify-center mr-3">
-            <ChefHat className="size-5 text-orange-700" />
+          <div className="size-11 2xl:size-12 ml-3 rounded-md bg-orange-600/20 flex items-center justify-center mr-3 relative">
+            {data?.image ? (
+              <Image
+                src={`/uploads/${data?.image}`}
+                alt={text}
+                fill
+                className="size-11 2xl:size-12 object-cover rounded-md"
+              />
+            ) : (
+              <ChefHat className="size-5 text-orange-700" />
+            )}
           </div>
           <div className="mr-3">
-            <h2 className="font-medium text-stone-600">Salatalar</h2>
+            <h2 className="font-medium text-stone-600">{props.node.text}</h2>
           </div>
           <div className="size-1.5 bg-green-400 rounded"></div>
         </div>
@@ -58,10 +88,18 @@ export const CustomNode: React.FC<Props> = ({ testIdPrefix = '', ...props }) => 
             {/* <Switch className=" h-4 w-6 after:absolute after:inset-0 [&_span]:size-3 [&_span]:data-[state=checked]:translate-x-2 rtl:[&_span]:data-[state=checked]:-translate-x-2 data-[state=checked]:bg-green-400" /> */}
           </div>
           <div className="cursor-pointer">
-            <PiPencil className="size-4 text-orange-400" />
+            {props.node.droppable ? (
+              <EditCategory menuId={props.menuId} node={props.node} />
+            ) : (
+              <EditItem menuId={props.menuId} node={props.node} />
+            )}
           </div>
           <div className="cursor-pointer">
-            <PiTrash className="size-4 text-orange-400" />
+            {props.node.droppable ? (
+              <DeleteCategory itemId={props.node.id.toString()} menuId={props.menuId} />
+            ) : (
+              <DeleteItem itemId={props.node.id.toString()} menuId={props.menuId} />
+            )}
           </div>
           <div className={`${styles.expand} ${props.isOpen ? styles.isOpen : ''} mr-2`}>
             {props.node.droppable && (

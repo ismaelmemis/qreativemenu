@@ -26,16 +26,19 @@ export default async function Login() {
         />
       </div>
       <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:w-3/5 lg:flex-none lg:px-20 xl:px-24">
-        <div className="mx-auto w-full max-w-md lg:max-w-[460px] 2xl:max-w-[460px] ">
+        <div className="mx-auto w-full max-w-md lg:max-w-[430px] 2xl:max-w-[460px] ">
           <CardWrapper title="Hoşgeldiniz 👋 Hesabınıza giriş yapın">
-            <div className="mt-6 grid gap-3">
+            {/* <div className="mt-6 grid gap-3">
               <form
                 action={async () => {
                   'use server';
                   await signIn('google', { callbackUrl: '/dashboard' });
                 }}
               >
-                <Button variant="outline" className="rounded-full h-11 w-full">
+                <Button
+                  variant="outline"
+                  className="rounded-full border border-stone-200 h-11 w-full"
+                >
                   <svg
                     className="h-6 w-6 mr-1"
                     viewBox="0 0 24 24"
@@ -63,8 +66,8 @@ export default async function Login() {
                   <span className="font-medium text-base">Google ile Giriş Yap</span>
                 </Button>
               </form>
-            </div>
-            <div className="my-5">
+            </div> */}
+            {/* <div className="my-5">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300" />
@@ -73,14 +76,14 @@ export default async function Login() {
                   <span className="bg-white px-2 text-gray-500">veya</span>
                 </div>
               </div>
-            </div>
+            </div> */}
             <LoginForm />
-            <div className="flex items-center justify-center text-sm mt-5">
+            {/* <div className="flex items-center justify-center text-sm mt-5">
               <span className="mr-1">Henüz hesabınız yok mu?</span>
               <Link className="hover:text-orange-500 text-orange-500 font-semibold" href="/signup">
                 Üye Ol
               </Link>
-            </div>
+            </div> */}
           </CardWrapper>
         </div>
       </div>

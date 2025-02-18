@@ -5,13 +5,22 @@ CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'OWNER', 'STAFF', 'USER');
 CREATE TYPE "PlanType" AS ENUM ('FREE', 'BASIC', 'PROFESSIONAL', 'PREMIUM');
 
 -- CreateEnum
+CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'SUCCESSFUL', 'FAILED', 'REFUNDED');
+
+-- CreateEnum
+CREATE TYPE "PaymentMethod" AS ENUM ('IYZICO', 'STRIPE', 'BANK_TRANSFER');
+
+-- CreateEnum
+CREATE TYPE "InvoiceStatus" AS ENUM ('DRAFT', 'SENT', 'PAID', 'OVERDUE', 'CANCELLED');
+
+-- CreateEnum
+CREATE TYPE "Currency" AS ENUM ('TRY', 'USD', 'EUR', 'GBP', 'JPY', 'AED', 'RUB', 'CHF', 'AUD', 'CAD', 'SGD', 'KRW', 'AZN', 'BGN', 'THB', 'PLN', 'NOK', 'IDR', 'KGS');
+
+-- CreateEnum
 CREATE TYPE "QRCodePurpose" AS ENUM ('MENU_VIEW', 'TABLE_ORDER', 'PAYMENT');
 
 -- CreateEnum
 CREATE TYPE "CallStatus" AS ENUM ('PENDING', 'IN_PROGRESS', 'RESOLVED', 'CANCELLED');
-
--- CreateEnum
-CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'PAID', 'FAILED', 'REFUNDED');
 
 -- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'PREPARING', 'READY', 'SERVED', 'CANCELLED');
@@ -59,6 +68,7 @@ CREATE TABLE "Subscription" (
     "plan" "PlanType" NOT NULL DEFAULT 'FREE',
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3),
+    "period" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -67,27 +77,62 @@ CREATE TABLE "Subscription" (
 );
 
 -- CreateTable
+CREATE TABLE "Payment" (
+    "id" TEXT NOT NULL,
+    "subscriptionId" TEXT NOT NULL,
+    "amount" DECIMAL(65,30) NOT NULL,
+    "currency" TEXT NOT NULL,
+    "status" "PaymentStatus" NOT NULL,
+    "paymentMethod" "PaymentMethod" NOT NULL,
+    "paymentDate" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Invoice" (
+    "id" TEXT NOT NULL,
+    "subscriptionId" TEXT NOT NULL,
+    "paymentId" TEXT NOT NULL,
+    "invoiceNumber" TEXT NOT NULL,
+    "invoiceDate" TIMESTAMP(3) NOT NULL,
+    "dueDate" TIMESTAMP(3) NOT NULL,
+    "totalAmount" DECIMAL(65,30) NOT NULL,
+    "status" "InvoiceStatus" NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Venue" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "slug" TEXT,
+    "image" TEXT,
     "description" TEXT,
+    "branchName" TEXT NOT NULL DEFAULT 'Main Branch',
     "address" TEXT,
     "phone" TEXT,
+    "whatsapp" TEXT,
     "email" TEXT,
     "country" TEXT,
     "city" TEXT,
     "logo" TEXT,
-    "coverLogo" TEXT,
-    "coverImage" TEXT,
-    "coverVideo" TEXT,
     "qrSlug" TEXT,
     "wifiAddress" TEXT,
     "wifiPassword" TEXT,
+    "wifiProtocol" TEXT,
     "size" TEXT,
     "features" TEXT,
     "themeSettings" JSONB,
     "openingHours" JSONB,
+    "currency" "Currency" DEFAULT 'TRY',
+    "selected" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -101,9 +146,9 @@ CREATE TABLE "QRCode" (
     "venueId" TEXT NOT NULL,
     "code" TEXT NOT NULL,
     "image" TEXT,
-    "tableId" TEXT NOT NULL,
+    "tableId" TEXT,
     "settings" JSONB NOT NULL,
-    "purpose" "QRCodePurpose" NOT NULL,
+    "purpose" "QRCodePurpose" NOT NULL DEFAULT 'MENU_VIEW',
     "session" INTEGER,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -117,24 +162,51 @@ CREATE TABLE "Menu" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
+    "url" TEXT,
+    "coverLogo" TEXT,
+    "coverImage" TEXT,
+    "coverVideo" TEXT,
+    "theme" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "archived" BOOLEAN DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "callWaiter" BOOLEAN NOT NULL DEFAULT false,
     "askBill" BOOLEAN NOT NULL DEFAULT false,
+    "menuView" JSONB,
     "venueId" TEXT,
 
     CONSTRAINT "Menu_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
+CREATE TABLE "Campaign" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "startDate" TIMESTAMP(3),
+    "endDate" TIMESTAMP(3),
+    "image" TEXT,
+    "coverImg" TEXT,
+    "archived" BOOLEAN NOT NULL DEFAULT false,
+    "featured" BOOLEAN NOT NULL DEFAULT false,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "menuId" TEXT NOT NULL,
+
+    CONSTRAINT "Campaign_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Category" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "slug" TEXT,
     "note" TEXT,
     "description" TEXT,
     "image" TEXT,
-    "labels" JSONB NOT NULL,
+    "labels" JSONB,
     "order" INTEGER NOT NULL DEFAULT 0,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -149,7 +221,7 @@ CREATE TABLE "MenuItem" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "price" DECIMAL(65,30) NOT NULL,
+    "price" DECIMAL(65,30),
     "image" TEXT,
     "video" TEXT,
     "allergens" TEXT[],
@@ -172,7 +244,7 @@ CREATE TABLE "MenuItem" (
 CREATE TABLE "TableArea" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "capacity" INTEGER NOT NULL,
+    "capacity" INTEGER,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -184,15 +256,16 @@ CREATE TABLE "TableArea" (
 -- CreateTable
 CREATE TABLE "Table" (
     "id" TEXT NOT NULL,
-    "number" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
     "capacity" INTEGER NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "qRCodeId" TEXT,
+    "qRCodeslug" TEXT,
     "venueId" TEXT,
     "waiterCallActive" BOOLEAN NOT NULL DEFAULT false,
     "billingCallActive" BOOLEAN NOT NULL DEFAULT false,
+    "tableAreaId" TEXT,
 
     CONSTRAINT "Table_pkey" PRIMARY KEY ("id")
 );
@@ -205,6 +278,7 @@ CREATE TABLE "WaiterCall" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "resolvedAt" TIMESTAMP(3),
+    "venueId" TEXT,
 
     CONSTRAINT "WaiterCall_pkey" PRIMARY KEY ("id")
 );
@@ -217,6 +291,7 @@ CREATE TABLE "BillingCall" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "resolvedAt" TIMESTAMP(3),
+    "venueId" TEXT,
 
     CONSTRAINT "BillingCall_pkey" PRIMARY KEY ("id")
 );
@@ -256,16 +331,28 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "Subscription_userId_key" ON "Subscription"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Venue_userId_key" ON "Venue"("userId");
+CREATE INDEX "Payment_subscriptionId_idx" ON "Payment"("subscriptionId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "QRCode_venueId_key" ON "QRCode"("venueId");
+CREATE UNIQUE INDEX "Invoice_paymentId_key" ON "Invoice"("paymentId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Invoice_invoiceNumber_key" ON "Invoice"("invoiceNumber");
+
+-- CreateIndex
+CREATE INDEX "Invoice_subscriptionId_idx" ON "Invoice"("subscriptionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Venue_userId_key" ON "Venue"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "QRCode_code_key" ON "QRCode"("code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "QRCode_tableId_key" ON "QRCode"("tableId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "QRCode_venueId_tableId_key" ON "QRCode"("venueId", "tableId");
 
 -- AddForeignKey
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -274,16 +361,28 @@ ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user
 ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Payment" ADD CONSTRAINT "Payment_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_paymentId_fkey" FOREIGN KEY ("paymentId") REFERENCES "Payment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Venue" ADD CONSTRAINT "Venue_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "QRCode" ADD CONSTRAINT "QRCode_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES "Venue"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "QRCode" ADD CONSTRAINT "QRCode_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Table"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "QRCode" ADD CONSTRAINT "QRCode_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Table"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Menu" ADD CONSTRAINT "Menu_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES "Venue"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Campaign" ADD CONSTRAINT "Campaign_menuId_fkey" FOREIGN KEY ("menuId") REFERENCES "Menu"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Category" ADD CONSTRAINT "Category_menuId_fkey" FOREIGN KEY ("menuId") REFERENCES "Menu"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -298,10 +397,19 @@ ALTER TABLE "TableArea" ADD CONSTRAINT "TableArea_venueId_fkey" FOREIGN KEY ("ve
 ALTER TABLE "Table" ADD CONSTRAINT "Table_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES "Venue"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Table" ADD CONSTRAINT "Table_tableAreaId_fkey" FOREIGN KEY ("tableAreaId") REFERENCES "TableArea"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "WaiterCall" ADD CONSTRAINT "WaiterCall_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Table"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "WaiterCall" ADD CONSTRAINT "WaiterCall_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES "Venue"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "BillingCall" ADD CONSTRAINT "BillingCall_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Table"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "BillingCall" ADD CONSTRAINT "BillingCall_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES "Venue"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Table"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

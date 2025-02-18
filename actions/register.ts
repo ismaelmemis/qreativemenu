@@ -39,5 +39,9 @@ export const register = async (values: z.infer<typeof registerSchema>) => {
     },
   });
 
-  return { success: 'Hesap Oluşturuldu', email: email, password: password };
+  return {
+    success: 'Hesap Oluşturuldu. Yönlendiriliyorsunuz...',
+    email: email,
+    password: password,
+  };
 };

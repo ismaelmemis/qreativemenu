@@ -20,7 +20,10 @@ export default function Signup() {
                 await signIn('google', { redirectTo: '/dashboard' });
               }}
             >
-              <Button variant="outline" className="rounded-full h-11 w-full">
+              <Button
+                variant="outline"
+                className="rounded-full border border-stone-200 h-11 w-full"
+              >
                 <svg
                   className="h-6 w-6 mr-1"
                   viewBox="0 0 24 24"

@@ -60,9 +60,12 @@ model Subscription {
   plan      PlanType  @default(FREE)
   startDate DateTime
   endDate   DateTime?
+  period    String?
   isActive  Boolean   @default(true)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  Payment   Payment[]
+  Invoice   Invoice[]
 }
 
 enum PlanType {
@@ -72,36 +75,119 @@ enum PlanType {
   PREMIUM
 }
 
+model Payment {
+  id             String        @id @default(cuid())
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String
+  amount         Decimal
+  currency       String
+  status         PaymentStatus
+  paymentMethod  PaymentMethod
+  paymentDate    DateTime
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  Invoice        Invoice?
+
+  @@index([subscriptionId])
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  IYZICO
+  STRIPE
+  BANK_TRANSFER
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String
+  payment        Payment       @relation(fields: [paymentId], references: [id])
+  paymentId      String        @unique
+  invoiceNumber  String        @unique
+  invoiceDate    DateTime
+  dueDate        DateTime
+  totalAmount    Decimal
+  status         InvoiceStatus
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([subscriptionId])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
 // Venue Model
 model Venue {
-  id            String      @id @default(cuid())
-  user          User        @relation(fields: [userId], references: [id])
-  userId        String      @unique
+  id            String        @id @default(cuid())
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String        @unique
   name          String
+  slug          String?
+  image         String?
   description   String?
+  branchName    String        @default("Main Branch")
   address       String?
   phone         String?
+  whatsapp      String?
   email         String?
   country       String?
   city          String?
   logo          String?
-  coverLogo     String?
-  coverImage    String?
-  coverVideo    String?
   qrSlug        String?
   wifiAddress   String?
   wifiPassword  String?
+  wifiProtocol  String?
   size          String?
   features      String?
   themeSettings Json?
   openingHours  Json?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  isActive      Boolean     @default(true)
+  currency      Currency?     @default(TRY)
+  selected      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  isActive      Boolean       @default(true)
   menus         Menu[]
   tableAreas    TableArea[]
-  qrCode        QRCode?
-  Table         Table[]
+  qrCode        QRCode[]
+  table         Table[]
+  waiterCall    WaiterCall[]
+  billingCall   BillingCall[]
+}
+
+enum Currency {
+  TRY
+  USD
+  EUR
+  GBP
+  JPY
+  AED
+  RUB
+  CHF
+  AUD
+  CAD
+  SGD
+  KRW
+  AZN
+  BGN
+  THB
+  PLN
+  NOK
+  IDR
+  KGS
+  // Add other currencies as needed
 }
 
 enum QRCodePurpose {
@@ -114,41 +200,70 @@ enum QRCodePurpose {
 model QRCode {
   id        String        @id @default(cuid())
   venue     Venue         @relation(fields: [venueId], references: [id])
-  venueId   String        @unique
+  venueId   String
   code      String        @unique // The actual QR code data or identifier
   image     String? // URL to the generated QR code image
-  table     Table         @relation(fields: [tableId], references: [id])
-  tableId   String        @unique
+  table     Table?        @relation(fields: [tableId], references: [id])
+  tableId   String?       @unique
   settings  Json
-  purpose   QRCodePurpose
+  purpose   QRCodePurpose @default(MENU_VIEW)
   session   Int?
   isActive  Boolean       @default(true)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+
+  @@unique([venueId, tableId])
 }
 
 // Menu Model
 model Menu {
-  id          String     @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
-  isActive    Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  callWaiter  Boolean    @default(false)
-  askBill     Boolean    @default(false)
-  Venue       Venue?     @relation(fields: [venueId], references: [id])
+  url         String?
+  coverLogo   String?
+  coverImage  String?
+  coverVideo  String?
+  theme       String?
+  isActive    Boolean  @default(true)
+  archived    Boolean? @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  callWaiter  Boolean  @default(false)
+  askBill     Boolean  @default(false)
+  menuView    Json?
+  Venue       Venue?   @relation(fields: [venueId], references: [id])
   venueId     String?
-  Category    Category[]
+
+  category Category[]
+  campaign Campaign[]
+}
+
+model Campaign {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  image       String?
+  coverImg    String?
+  archived    Boolean   @default(false)
+  featured    Boolean   @default(false)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Menu        Menu      @relation(fields: [menuId], references: [id])
+  menuId      String
 }
 
 model Category {
   id          String     @id @default(cuid())
   name        String
+  slug        String?
   note        String?
   description String?
   image       String?
-  labels      Json
+  labels      Json?
   order       Int        @default(0)
   isActive    Boolean    @default(true)
   createdAt   DateTime   @default(now())
@@ -162,7 +277,7 @@ model MenuItem {
   id              String      @id @default(cuid())
   name            String
   description     String?
-  price           Decimal
+  price           Decimal?
   image           String?
   video           String?
   allergens       String[]
@@ -185,22 +300,23 @@ model MenuItem {
 model TableArea {
   id        String   @id @default(cuid())
   name      String
-  capacity  Int
+  capacity  Int?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Venue     Venue?   @relation(fields: [venueId], references: [id])
   venueId   String?
+  table     Table[]
 }
 
 model Table {
   id                String        @id @default(cuid())
-  number            Int
+  name              String
   capacity          Int
   isActive          Boolean       @default(true)
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
-  qRCodeId          String?
+  qRCodeslug        String?
   QRCode            QRCode?
   Venue             Venue?        @relation(fields: [venueId], references: [id])
   venueId           String?
@@ -209,6 +325,8 @@ model Table {
   BillingCall       BillingCall[]
   billingCallActive Boolean       @default(false)
   Order             Order[]
+  TableArea         TableArea?    @relation(fields: [tableAreaId], references: [id])
+  tableAreaId       String?
 }
 
 enum CallStatus {
@@ -227,6 +345,8 @@ model WaiterCall {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   resolvedAt DateTime?
+  Venue      Venue?     @relation(fields: [venueId], references: [id])
+  venueId    String?
 }
 
 // New BillingCall model
@@ -238,13 +358,8 @@ model BillingCall {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   resolvedAt DateTime?
-}
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  FAILED
-  REFUNDED
+  Venue      Venue?     @relation(fields: [venueId], references: [id])
+  venueId    String?
 }
 
 enum OrderStatus {

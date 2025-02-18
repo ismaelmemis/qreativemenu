@@ -1,0 +1,12 @@
+.treeRoot {
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.draggingSource {
+  opacity: 0.3;
+}
+
+.placeholderContainer {
+  position: relative;
+}

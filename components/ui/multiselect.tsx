@@ -22,6 +22,8 @@ interface GroupOption {
 }
 
 interface MultipleSelectorProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  field?: any;
   value?: Option[];
   defaultOptions?: Option[];
   /** manually controlled options */
@@ -76,6 +78,8 @@ interface MultipleSelectorProps {
   >;
   /** hide the clear all button. */
   hideClearAllButton?: boolean;
+  name?: string;
+  onBlur?: () => void;
 }
 
 export interface MultipleSelectorRef {
@@ -168,6 +172,7 @@ CommandEmpty.displayName = 'CommandEmpty';
 const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorProps>(
   (
     {
+      field,
       value,
       onChange,
       placeholder,
@@ -191,6 +196,8 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       commandProps,
       inputProps,
       hideClearAllButton = false,
+      name,
+      onBlur,
     }: MultipleSelectorProps,
     ref: React.Ref<MultipleSelectorRef>
   ) => {
@@ -425,6 +432,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
 
     return (
       <Command
+        {...field}
         ref={dropdownRef}
         {...commandProps}
         onKeyDown={(e) => {
@@ -490,6 +498,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
               ref={inputRef}
               value={inputValue}
               disabled={disabled}
+              name={name}
               onValueChange={(value) => {
                 setInputValue(value);
                 inputProps?.onValueChange?.(value);
@@ -499,6 +508,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                   setOpen(false);
                 }
                 inputProps?.onBlur?.(event);
+                onBlur?.();
               }}
               onFocus={(event) => {
                 setOpen(true);

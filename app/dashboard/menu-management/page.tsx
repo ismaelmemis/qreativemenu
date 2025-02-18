@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { auth } from '@/auth';
+
 import { Button } from '@/components/ui/button';
 import { PiArchive, PiBroadcast, PiForkKnife } from 'react-icons/pi';
 import { FaSignal } from 'react-icons/fa';
@@ -7,11 +9,36 @@ import { FaBatteryFull } from 'react-icons/fa';
 import { FaWifi } from 'react-icons/fa';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
 import { CreateMenuForm } from '@/components/dashboard/menu/menu-forms/create-menu';
 import MenuDropdown from '@/components/dashboard/menu/dropdowns/menu-dropdown';
+import { db } from '@/lib/db';
+import InternalFrame from '@/components/view/internal-frame';
+import MenuActiveSwitcher from '@/components/dashboard/menu/menu-forms/menu-active-switcher';
 
-export default function MenuManagement() {
+export default async function MenuManagement() {
+  const session = await auth();
+
+  const user = await db.user.findUnique({
+    where: { id: session?.user.id },
+    include: {
+      venues: {
+        include: {
+          menus: {
+            include: {
+              category: {
+                include: {
+                  menuItem: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const menus = user?.venues.flatMap((venue) => venue.menus);
+
   return (
     <div className="py-8 flex flex-col">
       <div className="flex justify-between items-center">
@@ -37,37 +64,56 @@ export default function MenuManagement() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="menus">
-              <section className="bg-white rounded-md shadow-[-2px_11px_36px_0px_rgba(0,_0,_0,_0.05)] w-full px-6 py-6">
-                <div className="rounded-xl border border-stone-200/70 shadow-sm p-5 flex justify-between relative">
-                  <div className="absolute size-2 bg-green-400 rounded-full right-4 top-5"></div>
-                  <div className="flex flex-col gap-3 justify-between">
-                    <div>
-                      <h2 className="font-medium text-lg text-stone-950 leading-snug">
-                        Standard Menü
-                      </h2>
-                      <div className="text-[13px] text-stone-600 flex items-center">
-                        <strong className="font-semibold">Durumu:</strong>{' '}
-                        <span className="ml-1">Yayında</span>
-                        <PiBroadcast className="ml-0.5 text-emerald-500 font-bold" />
+              <section className="flex flex-col gap-3 bg-white rounded-md shadow-[-2px_11px_36px_0px_rgba(0,_0,_0,_0.05)] w-full px-6 py-6">
+                {menus?.map((menu) => {
+                  return (
+                    <div
+                      key={menu.id}
+                      className="rounded-xl border border-stone-200/70 shadow-sm p-5 flex justify-between relative"
+                    >
+                      <div
+                        className={`absolute size-2 ${
+                          menu.isActive ? 'bg-green-400' : 'bg-red-400'
+                        } rounded-full right-4 top-5`}
+                      ></div>
+                      <div className="flex flex-col gap-3 justify-between">
+                        <div>
+                          <h2 className="font-medium text-lg text-stone-950 leading-snug">
+                            {menu.name}
+                          </h2>
+                          <div className="text-[13px] text-stone-600 flex items-center">
+                            <strong className="font-semibold">Durumu:</strong>{' '}
+                            <span className="ml-1">
+                              {menu.isActive ? 'Yayında' : 'Yayında Değil'}
+                            </span>
+                            <PiBroadcast
+                              className={`ml-0.5 ${
+                                menu.isActive ? 'text-green-400' : 'text-red-400'
+                              } font-bold`}
+                            />
+                          </div>
+                        </div>
+                        <div className="text-[13px] font-medium text-stone-700">
+                          {menu.category.length} Kategori -{' '}
+                          {menu.category.reduce((curr, acc) => curr + acc.menuItem.length, 0)} Ürün
+                        </div>
+                      </div>
+                      <div className="flex flex-col justify-center">
+                        <div className="flex items-center gap-3">
+                          <Button variant="alternative" className="text-sm" asChild>
+                            <Link href={`menu-management/${menu.id}`}>Menüyü Düzenle</Link>
+                          </Button>
+                          <MenuActiveSwitcher menuId={menu.id} isActive={menu.isActive} />
+                          {/* <Switch
+                            checked
+                            className="h-5 w-8 [&_span]:size-4 [&_span]:data-[state=checked]:translate-x-3 rtl:[&_span]:data-[state=checked]:-translate-x-3 ml-2 data-[state=checked]:bg-green-400"
+                          /> */}
+                          <MenuDropdown menuId={menu.id} archived={menu?.archived} />
+                        </div>
                       </div>
                     </div>
-                    <div className="text-[13px] font-medium text-stone-700">
-                      2 Kategori - 7 Ürün
-                    </div>
-                  </div>
-                  <div className="flex flex-col justify-center">
-                    <div className="flex items-center gap-3">
-                      <Button variant="alternative" className="text-sm" asChild>
-                        <Link href="menu-management/1">Menüyü Düzenle</Link>
-                      </Button>
-                      <Switch
-                        checked
-                        className="h-5 w-8 [&_span]:size-4 [&_span]:data-[state=checked]:translate-x-3 rtl:[&_span]:data-[state=checked]:-translate-x-3 ml-2 data-[state=checked]:bg-green-400"
-                      />
-                      <MenuDropdown />
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </section>
             </TabsContent>
             <TabsContent value="archive">
@@ -96,7 +142,9 @@ export default function MenuManagement() {
                 <FaBatteryFull className="size-3.5" />
               </div>
             </div>
-            <div className="flex-1"></div>
+            <div className="flex-1">
+              <InternalFrame src="/danielgallegos" title={''} />
+            </div>
             <div className="flex flex-col items-center border-t border-gray-100 bg-stone-50 px-5 pb-1 pt-4">
               <div className="h-[3px] w-[90px] rounded-lg bg-stone-900"></div>
             </div>

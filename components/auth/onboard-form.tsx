@@ -40,6 +40,7 @@ const onboardSchema = z.object({
 
 export default function OnboardForm({ id }: { id: string }) {
   const [step, setStep] = useState('first');
+  const [redirecting, setRedirecting] = useState(false);
 
   const form = useForm<z.infer<typeof onboardSchema>>({
     resolver: zodResolver(onboardSchema),
@@ -55,6 +56,7 @@ export default function OnboardForm({ id }: { id: string }) {
 
   const onSubmit = async (values: z.infer<typeof onboardSchema>) => {
     if (step === 'second') {
+      setRedirecting(true);
       startTransition(async () => {
         onboard(values, id);
       });
@@ -276,8 +278,8 @@ export default function OnboardForm({ id }: { id: string }) {
             </>
           ) : (
             <>
-              <Button className="text-sm" variant={'primary'}>
-                Deneme Sürümünü Başlat
+              <Button disabled={redirecting} className="text-sm" variant={'primary'}>
+                {redirecting ? 'Panele Yönlendiriliyorsunuz' : 'Deneme Sürümünü Başlat'}
               </Button>
             </>
           )}
