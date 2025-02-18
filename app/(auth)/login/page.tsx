@@ -1,12 +1,7 @@
-import { signIn } from '@/auth';
-
 import Logo from '@/components/assets/logo';
-
-import { Button } from '@/components/ui/button';
 
 import CardWrapper from '@/components/auth/card-wrapper';
 import LoginForm from '@/components/auth/login-form';
-import Link from 'next/link';
 
 export default async function Login() {
   return (
