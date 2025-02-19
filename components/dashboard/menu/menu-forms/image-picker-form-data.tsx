@@ -73,7 +73,7 @@ any) {
           <>
             {defaultImage ? (
               <Image
-                src={`/uploads/${defaultImage}`}
+                src={`/api/uploads/${defaultImage}`}
                 fill
                 className={`w-[140px] h-[124px] rounded-lg ${
                   formName ? 'object-contain' : 'object-cover'

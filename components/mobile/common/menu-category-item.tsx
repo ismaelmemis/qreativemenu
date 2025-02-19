@@ -29,7 +29,7 @@ export default function MenuCategoryItem({
         <div className="relative h-20 xs:h-32 2xl:h-44 rounded-xl xs:rounded-2xl">
           {image ? (
             <Image
-              src={`/uploads/${image}`}
+              src={`/api/uploads/${image}`}
               alt="makarna kategori"
               className="object-cover rounded-t-lg xs:rounded-t-2xl"
               fill

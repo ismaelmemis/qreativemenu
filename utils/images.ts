@@ -3,14 +3,14 @@ export function formatImageName(name: string, extension: string) {
   name = name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // Remove accents
   name = name.replace(/[^a-zA-Z0-9]/g, '_'); // Replace non-alphanumeric with underscores
 
-  // Generate timestamp for uniqueness
-  const timestamp = Date.now();
+  // // Generate timestamp for uniqueness
+  const timestamp = Date.now().toString();
 
   // Ensure extension has a dot
   extension = extension.startsWith('.') ? extension : `.${extension}`;
 
   // Format final name
-  return `${name}_${timestamp}${extension}`;
+  return `${name}-${timestamp}${extension}`;
 }
 
 export function getFileNameOnly(filename: string) {

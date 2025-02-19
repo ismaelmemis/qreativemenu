@@ -28,7 +28,7 @@ export default async function Languages({ params }: { params: { venue: string } 
           {venue?.logo ? (
             <>
               <Image
-                src={`/uploads/${venue?.logo}`}
+                src={`/api/uploads/${venue?.logo}`}
                 alt="logo-venue"
                 fill
                 className="object-contain h-[35px] xs:h-[55px]"

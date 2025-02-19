@@ -15,7 +15,7 @@ export default function CoverImageComponent({ imageSrc }: { imageSrc: string }) 
 
   return (
     <Suspense fallback={<>Loading...</>}>
-      <Image src={`/uploads/${imageSrc}`} alt="cover image" fill />
+      <Image src={`/api/uploads/${imageSrc}`} alt="cover image" fill />
     </Suspense>
   );
 }

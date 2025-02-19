@@ -68,7 +68,7 @@ export default async function Category({
                   <div className="relative min-w-16 min-h-16 xs:min-w-28 xs:min-h-28 2xl:min-w-32 2xl:min-h-32">
                     {item.image ? (
                       <Image
-                        src={`/uploads/${item.image}`}
+                        src={`/api/uploads/${item.image}`}
                         alt="product"
                         fill
                         className="rounded-md xs:rounded-xl flex-shrink-0 size-14 xs:size-28 2xl:min-w-32 2xl:min-h-32 object-cover"

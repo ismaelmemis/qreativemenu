@@ -61,7 +61,7 @@ export default function SearchComponent({
             <div className=" object-cover w-full h-[35px] xs:h-[55px] flex-1 relative">
               {logo ? (
                 <Image
-                  src={`/uploads/${logo}`}
+                  src={`/api/uploads/${logo}`}
                   alt="logo-venue"
                   fill
                   className="object-contain h-[35px] xs:h-[55px] pl-[32px] xs:pl-[48px]"

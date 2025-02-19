@@ -60,7 +60,7 @@ export default function ImagePicker({ field, setImageInput, defaultImage, formNa
           <>
             {defaultImage ? (
               <video className="w-[140px] h-[124px] rounded-lg">
-                <source src={`/uploads/${defaultImage}`} type="video/mp4" />
+                <source src={`/api/uploads/${defaultImage}`} type="video/mp4" />
               </video>
             ) : (
               <>

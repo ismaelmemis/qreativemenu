@@ -1,6 +1,5 @@
 'use server';
 import fs from 'node:fs/promises';
-const { URL } = 'node:url';
 
 import type { z } from 'zod';
 
@@ -18,14 +17,15 @@ export async function createCategory(values: any, formData: FormData) {
 
   const imageFile = formData.get('file') as File;
 
+  console.log(imageFile.name);
+
+  const imageFileName = getFileNameOnly(imageFile.name);
+  const imageFileExtension = getFileExtension(imageFile.name) as string;
+
+  const imageFileLink = formatImageName(imageFileName, imageFileExtension);
+
   if (imageFile) {
     const arrayBuffer = await imageFile.arrayBuffer();
-
-    const imageFileName = getFileNameOnly(imageFile.name);
-    const imageFileExtension = getFileExtension(imageFile.name) as string;
-
-    const imageFileLink = formatImageName(imageFileName, imageFileExtension);
-
     const buffer = new Uint8Array(arrayBuffer);
     await fs.writeFile(`./public/uploads/${imageFileLink}`, buffer);
 
@@ -58,7 +58,7 @@ export async function createCategory(values: any, formData: FormData) {
           droppable: true,
           text: name,
           data: {
-            image: `${imageFileLink}`,
+            image: imageFileLink,
             description: description,
           },
         },
@@ -82,7 +82,7 @@ export async function createCategory(values: any, formData: FormData) {
           text: name,
           droppable: true,
           data: {
-            image: `${imageFileLink}`,
+            image: imageFileLink,
             description: description,
           },
         },

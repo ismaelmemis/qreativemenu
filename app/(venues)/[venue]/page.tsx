@@ -24,7 +24,7 @@ export default async function Venue({ params }: { params: { venue: string } }) {
   return (
     <>
       {coverVideo ? (
-        <VideoComponent videoSrc={`/uploads/${coverVideo}`} />
+        <VideoComponent videoSrc={`/api/uploads/${coverVideo}`} />
       ) : (
         <CoverImageComponent imageSrc={coverImage as string} />
       )}

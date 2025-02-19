@@ -83,7 +83,7 @@ export default async function Menu({ params }: { params: { venue: string; menu_i
                     </div>
                   </div>
                   <Image
-                    src={`/uploads/${featuredCampaign?.coverImg}`}
+                    src={`/api/uploads/${featuredCampaign?.coverImg}`}
                     alt="kampanya pizza"
                     fill
                     className="rounded-2xl object-cover"

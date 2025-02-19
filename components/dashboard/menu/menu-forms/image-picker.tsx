@@ -79,7 +79,7 @@ export default function ImagePicker({
           <>
             {defaultImage ? (
               <Image
-                src={`/uploads/${defaultImage}`}
+                src={`/api/uploads/${defaultImage}`}
                 fill
                 className={`w-[140px] h-[124px] rounded-lg ${
                   formName || containImage ? 'object-contain p-2' : 'object-cover'

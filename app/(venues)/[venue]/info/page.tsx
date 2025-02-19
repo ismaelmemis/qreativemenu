@@ -39,7 +39,7 @@ export default async function Info({ params }: { params: { venue: string } }) {
           {venue?.image ? (
             <>
               <Image
-                src={`/uploads/${venue?.image}`}
+                src={`/api/uploads/${venue?.image}`}
                 fill
                 alt="Caprese Salat"
                 className="object-cover h-48 xs:h-60 shrink-0"

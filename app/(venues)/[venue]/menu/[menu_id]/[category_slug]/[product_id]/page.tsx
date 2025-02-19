@@ -89,7 +89,7 @@ export default async function Product({
           </div>
           {item?.image ? (
             <Image
-              src={`/uploads/${item?.image}`}
+              src={`/api/uploads/${item?.image}`}
               fill
               alt={item?.name || ''}
               className="object-cover h-44 xs:h-80 shrink-0"

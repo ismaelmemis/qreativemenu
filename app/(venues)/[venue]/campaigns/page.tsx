@@ -48,7 +48,7 @@ export default async function Campaigns({ params }: { params: { venue: string } 
         <div className=" object-cover w-full text-center h-[35px] xs:h-[55px] flex-1 relative">
           {logo ? (
             <Image
-              src={`/uploads/${logo}`}
+              src={`/api/uploads/${logo}`}
               alt="logo-venue"
               fill
               className="object-contain h-[35px] xs:h-[55px]"
@@ -77,7 +77,7 @@ export default async function Campaigns({ params }: { params: { venue: string } 
                 <div className="relative min-w-16 min-h-16 xs:min-w-28 xs:min-h-28 2xl:size-32">
                   {campaign?.image ? (
                     <Image
-                      src={`/uploads/${campaign.image}`}
+                      src={`/api/uploads/${campaign.image}`}
                       alt="product"
                       fill
                       className="rounded-lg xs:rounded-xl flex-shrink-0 size-14 xs:size-28 2xl:min-w-32 2xl:min-h-32 object-cover"

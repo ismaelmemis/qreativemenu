@@ -1,6 +1,6 @@
 'use client';
 
-import React, { RefObject, useEffect } from 'react';
+import React, { RefObject, useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -15,7 +15,6 @@ import DeleteItem from '../menu-forms/delete-item';
 import DeleteCategory from '../menu-forms/deleteCategory';
 import { EditCategory } from '../menu-forms/edit-category';
 import EditItem from '../menu-forms/edit-item';
-// import { Switch } from '@/components/ui/switch';
 
 type CustomNodeData = {
   image: string;
@@ -69,7 +68,7 @@ export const CustomNode: React.FC<Props> = ({ testIdPrefix = '', ...props }) => 
           <div className="size-11 2xl:size-12 ml-3 rounded-md bg-orange-600/20 flex items-center justify-center mr-3 relative">
             {data?.image ? (
               <Image
-                src={`/uploads/${data?.image}`}
+                src={`/api/uploads/${data?.image}`}
                 alt={text}
                 fill
                 className="size-11 2xl:size-12 object-cover rounded-md"

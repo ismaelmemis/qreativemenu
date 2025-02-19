@@ -30,7 +30,7 @@ export default async function AvatarMenu() {
         <DropdownMenuTrigger>
           <Avatar>
             {user?.image ? (
-              <AvatarImage src={`/uploads/${user.image}`} />
+              <AvatarImage src={`/api/uploads/${user.image}`} />
             ) : (
               <AvatarFallback className="bg-stone-200 p-1">
                 {getInitials(user?.name) || ''}

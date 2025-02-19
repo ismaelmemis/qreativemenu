@@ -47,7 +47,7 @@ const ProductCarousel: React.FC<PropType> = (props) => {
                 >
                   <div className="relative h-16 xs:h-28 2xl:h-36 rounded-2xl">
                     <Image
-                      src={`/uploads/${slide.image}`}
+                      src={`/api/uploads/${slide.image}`}
                       alt={slide.name}
                       className="object-cover rounded-t-2xl h-16 xs:h-28 2xl:h-36 shrink-0"
                       fill
