@@ -43,7 +43,7 @@ export default function RegisterForm() {
         signIn('credentials', {
           email: values.email,
           password: values.password,
-          redirectTo: '/signup/details',
+          redirectTo: '/signup-retailmode/details',
         });
       });
     });

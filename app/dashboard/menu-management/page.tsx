@@ -143,7 +143,7 @@ export default async function MenuManagement() {
               </div>
             </div>
             <div className="flex-1">
-              <InternalFrame src="/danielgallegos" title={''} />
+              <InternalFrame src={`/${user?.venues[0]?.slug}`} title={''} />
             </div>
             <div className="flex flex-col items-center border-t border-gray-100 bg-stone-50 px-5 pb-1 pt-4">
               <div className="h-[3px] w-[90px] rounded-lg bg-stone-900"></div>

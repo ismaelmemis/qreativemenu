@@ -1,5 +1,4 @@
-import { type DefaultSession } from 'next-auth';
-import NextAuth, { User as NextAuthUser, Session } from 'next-auth';
+import { User as NextAuthUser } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 

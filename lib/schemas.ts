@@ -51,6 +51,26 @@ export const createMenuItemSchema = z.object({
   calorie: z.string().optional(),
 });
 
+export const editMenuItemSchema = z.object({
+  menuId: z.string(),
+  name: z.string().min(1, { message: 'Ürün Adı boş bırakılamaz.' }),
+  description: z.string().optional(),
+  image: zfd
+    .file()
+    .refine((file) => file.size < 3000000, {
+      message: "Dosyanın boyutu 5MB'dan fazla olamaz.",
+    })
+    .refine((file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+      message: 'Dosyanın formatı jpg, jpeg veya png olmalıdır.',
+    })
+    .optional(),
+  price: z.string().optional(),
+  keyingredients: z.string().optional(),
+  allergens: z.string().optional(),
+  time: z.string().optional(),
+  calorie: z.string().optional(),
+});
+
 export const editMenuSettings = z.object({
   name: z.string().min(1, { message: 'Menü Adı boş bırakılamaz.' }),
   theme: z.string().optional(),

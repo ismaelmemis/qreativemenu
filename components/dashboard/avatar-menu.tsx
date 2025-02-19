@@ -13,6 +13,7 @@ import { db } from '@/lib/db';
 import Link from 'next/link';
 import { PiStorefront, PiUserCircle } from 'react-icons/pi';
 import SignOutButton from './signout-button';
+import { getInitials } from '@/lib/data';
 
 export default async function AvatarMenu() {
   const session = await auth();
@@ -31,7 +32,9 @@ export default async function AvatarMenu() {
             {user?.image ? (
               <AvatarImage src={`/uploads/${user.image}`} />
             ) : (
-              <AvatarFallback className="bg-stone-200 p-1">IM</AvatarFallback>
+              <AvatarFallback className="bg-stone-200 p-1">
+                {getInitials(user?.name) || ''}
+              </AvatarFallback>
             )}
             {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
           </Avatar>

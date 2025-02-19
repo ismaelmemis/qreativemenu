@@ -1,12 +1,13 @@
 'use server';
 
 import { db } from '@/lib/db';
+import { generateSlug } from '@/lib/slugify';
 import { redirect } from 'next/navigation';
 import { Options } from 'qr-code-styling';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const onboard = async (values: any, userId: string) => {
-  let trimmedUrl = values.venuename.replace(/\s+/g, '').toLowerCase();
+  let trimmedUrl = generateSlug(values.venuename);
 
   const existingVenue = await db.venue.findFirst({
     where: {
@@ -15,8 +16,7 @@ export const onboard = async (values: any, userId: string) => {
   });
 
   if (existingVenue) {
-    trimmedUrl =
-      values.venuename.replace(/\s+/g, '').toLowerCase() + Math.floor(Math.random() * 10000) + 1;
+    trimmedUrl = generateSlug(values.venuename) + Math.floor(Math.random() * 10000) + 1;
   }
 
   const options: Options = {

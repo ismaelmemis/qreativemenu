@@ -25,7 +25,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import MultipleSelector, { Option } from '@/components/ui/multiselect';
-import { createMenuItemSchema } from '@/lib/schemas';
+import { createMenuItemSchema, editMenuItemSchema } from '@/lib/schemas';
 import ImagePicker from './image-picker';
 import { PiCheckCircle, PiPencil } from 'react-icons/pi';
 import { editMenuItem } from '@/actions/menu';
@@ -76,13 +76,15 @@ export default function EditItem({ menuId, node }: { menuId: string; node: any }
   const [selectedAllergens, setSelectedAllergens] = useState<Option[]>([]);
   const [imageInput, setImageInput] = useState<FormData>(new FormData());
 
-  const form = useForm<z.infer<typeof createMenuItemSchema>>({
-    resolver: zodResolver(createMenuItemSchema),
+  const form = useForm<z.infer<typeof editMenuItemSchema>>({
+    resolver: zodResolver(editMenuItemSchema),
   });
 
-  function onSubmit(values: z.infer<typeof createMenuItemSchema>) {
-    const { name, description, price, menuId, category, time, calorie } = values;
-    const actionValues = { name, description, price, menuId, category, calorie, time };
+  function onSubmit(values: z.infer<typeof editMenuItemSchema>) {
+    console.log('TEST');
+
+    const { name, description, price, menuId, time, calorie } = values;
+    const actionValues = { name, description, price, menuId, calorie, time };
 
     editMenuItem(actionValues, node.id, selectedKeyIngredients, selectedAllergens, imageInput);
 

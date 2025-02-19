@@ -13,6 +13,16 @@ import MenuSettings from '@/components/dashboard/menu/menu-forms/menu-settings';
 export default async function MenuEditor({ params }: { params: { ['menu_id']: 'string' } }) {
   const { menu_id }: { menu_id: string } = params;
 
+  const venue = await db.venue.findFirst({
+    where: {
+      menus: {
+        some: {
+          id: menu_id, // Replace 'menuId' with the actual ID you're looking for
+        },
+      },
+    },
+  });
+
   const menu = await db.menu.findUnique({
     where: {
       id: menu_id,
@@ -117,7 +127,7 @@ export default async function MenuEditor({ params }: { params: { ['menu_id']: 's
               </div>
             </div>
             <div className="flex-1">
-              <InternalFrame src={`/danielgallegos/menu/${menu_id}`} data={jsonMenu} title={''} />
+              <InternalFrame src={`/${venue?.slug}/menu/${menu_id}`} data={jsonMenu} title={''} />
             </div>
             <div className="flex flex-col items-center border-t border-gray-100 bg-stone-50 px-5 pb-1 pt-4">
               <div className="h-[3px] w-[90px] rounded-lg bg-stone-900"></div>

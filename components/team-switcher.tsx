@@ -18,6 +18,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { getInitials } from '@/lib/data';
 
 export function TeamSwitcher({
   teams,
@@ -41,7 +42,7 @@ export function TeamSwitcher({
               className="border border-stone-200 data-[state=open]:bg-stone-100 data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-orange-600 text-sidebar-primary-foreground">
-                DG
+                {getInitials(user?.name) || ''}
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{activeTeam.name}</span>

@@ -1,5 +1,6 @@
 'use server';
 import fs from 'node:fs/promises';
+const { URL } = 'node:url';
 
 import type { z } from 'zod';
 
@@ -9,6 +10,7 @@ import { CampaignValues } from '@/components/dashboard/menu/menu-forms/create-ca
 import { createTableAreaSchema, createTableSchema } from '@/lib/schemas';
 import { Options } from 'qr-code-styling';
 import { compareSync, hashSync } from 'bcrypt-ts';
+import { formatImageName, getFileExtension, getFileNameOnly } from '@/utils/images';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createCategory(values: any, formData: FormData) {
@@ -18,15 +20,21 @@ export async function createCategory(values: any, formData: FormData) {
 
   if (imageFile) {
     const arrayBuffer = await imageFile.arrayBuffer();
+
+    const imageFileName = getFileNameOnly(imageFile.name);
+    const imageFileExtension = getFileExtension(imageFile.name) as string;
+
+    const imageFileLink = formatImageName(imageFileName, imageFileExtension);
+
     const buffer = new Uint8Array(arrayBuffer);
-    await fs.writeFile(`./public/uploads/${imageFile.name}`, buffer);
+    await fs.writeFile(`./public/uploads/${imageFileLink}`, buffer);
 
     const category = await db.category.create({
       data: {
         name: name,
         labels: '',
         menuId: menuId,
-        image: imageFile.name,
+        image: imageFileLink,
         description: description,
         slug: name.toLowerCase(),
       },
@@ -50,7 +58,7 @@ export async function createCategory(values: any, formData: FormData) {
           droppable: true,
           text: name,
           data: {
-            image: `${imageFile.name}`,
+            image: `${imageFileLink}`,
             description: description,
           },
         },
@@ -74,7 +82,7 @@ export async function createCategory(values: any, formData: FormData) {
           text: name,
           droppable: true,
           data: {
-            image: `${imageFile.name}`,
+            image: `${imageFileLink}`,
             description: description,
           },
         },
@@ -179,14 +187,20 @@ export async function createMenuItem(
 
   if (imageFile) {
     const arrayBuffer = await imageFile.arrayBuffer();
+
+    const imageFileName = getFileNameOnly(imageFile.name);
+    const imageFileExtension = getFileExtension(imageFile.name) as string;
+
+    const imageFileLink = formatImageName(imageFileName, imageFileExtension);
+
     const buffer = new Uint8Array(arrayBuffer);
-    await fs.writeFile(`./public/uploads/${imageFile.name}`, buffer);
+    await fs.writeFile(`./public/uploads/${imageFileLink}`, buffer);
 
     const menuItem = await db.menuItem.create({
       data: {
         name: name,
         categoryId: category,
-        image: imageFile.name,
+        image: imageFileLink,
         description: description,
         price: price,
         ingredients: dbKeyIngredients,
@@ -214,7 +228,7 @@ export async function createMenuItem(
         text: name,
         droppable: false,
         data: {
-          image: imageFile.name,
+          image: imageFileLink,
           description: description,
           price: price,
           ingredients: dbKeyIngredients,
@@ -461,9 +475,14 @@ export async function editCategory(values: any, catId: string, formData: FormDat
     });
   } else {
     const arrayBuffer = await imageFile.arrayBuffer();
-    const buffer = new Uint8Array(arrayBuffer);
 
-    await fs.writeFile(`./public/uploads/${imageFile.name}`, buffer);
+    const imageFileName = getFileNameOnly(imageFile.name);
+    const imageFileExtension = getFileExtension(imageFile.name) as string;
+
+    const imageFileLink = formatImageName(imageFileName, imageFileExtension);
+
+    const buffer = new Uint8Array(arrayBuffer);
+    await fs.writeFile(`./public/uploads/${imageFileLink}`, buffer);
 
     const menu = (await db.menu.findFirst({
       where: {
@@ -483,7 +502,7 @@ export async function editCategory(values: any, catId: string, formData: FormDat
           data: {
             ...item.data,
             description: description,
-            image: imageFile.name,
+            image: imageFileLink,
           },
         };
       } else {
@@ -507,7 +526,7 @@ export async function editCategory(values: any, catId: string, formData: FormDat
       data: {
         name: name,
         description: description,
-        image: imageFile.name,
+        image: imageFileLink,
       },
     });
   }
@@ -668,7 +687,12 @@ export async function updateMenuSettings(values: any, menuId: string, formData: 
       const arrayBuffer = await coverImageFile.arrayBuffer();
       const buffer = new Uint8Array(arrayBuffer);
 
-      await fs.writeFile(`./public/uploads/${coverImageFile.name}`, buffer);
+      const coverImageName = getFileNameOnly(coverImageFile.name);
+      const coverImageExtension = getFileExtension(coverImageFile.name) as string;
+
+      const coverImageLink = formatImageName(coverImageName, coverImageExtension);
+
+      await fs.writeFile(`./public/uploads/${coverImageLink}`, buffer);
 
       await db.menu.update({
         where: {
@@ -677,7 +701,7 @@ export async function updateMenuSettings(values: any, menuId: string, formData: 
         data: {
           name: values.name,
           theme: values.theme,
-          coverImage: coverImageFile.name,
+          coverImage: coverImageLink,
         },
       });
     }
@@ -686,7 +710,12 @@ export async function updateMenuSettings(values: any, menuId: string, formData: 
       const arrayBuffer = await coverLogoFile.arrayBuffer();
       const buffer = new Uint8Array(arrayBuffer);
 
-      await fs.writeFile(`./public/uploads/${coverLogoFile.name}`, buffer);
+      const coverLogoName = getFileNameOnly(coverLogoFile.name);
+      const coverLogoExtension = getFileExtension(coverLogoFile.name) as string;
+
+      const coverLogoLink = formatImageName(coverLogoName, coverLogoExtension);
+
+      await fs.writeFile(`./public/uploads/${coverLogoLink}`, buffer);
 
       await db.menu.update({
         where: {
@@ -695,7 +724,7 @@ export async function updateMenuSettings(values: any, menuId: string, formData: 
         data: {
           name: values.name,
           theme: values.theme,
-          coverLogo: coverLogoFile.name,
+          coverLogo: coverLogoLink,
         },
       });
     }
@@ -704,7 +733,12 @@ export async function updateMenuSettings(values: any, menuId: string, formData: 
       const arrayBuffer = await coverVideo.arrayBuffer();
       const buffer = new Uint8Array(arrayBuffer);
 
-      await fs.writeFile(`./public/uploads/${coverVideo.name}`, buffer);
+      const coverVideoName = getFileNameOnly(coverVideo.name);
+      const coverVideoExtension = getFileExtension(coverVideo.name) as string;
+
+      const coverVideoLink = formatImageName(coverVideoName, coverVideoExtension);
+
+      await fs.writeFile(`./public/uploads/${coverVideoLink}`, buffer);
 
       await db.menu.update({
         where: {
@@ -713,7 +747,7 @@ export async function updateMenuSettings(values: any, menuId: string, formData: 
         data: {
           name: values.name,
           theme: values.theme,
-          coverVideo: coverVideo.name,
+          coverVideo: coverVideoLink,
         },
       });
     }
@@ -741,7 +775,12 @@ export async function createCampaign(values: CampaignValues, menuId: string, for
     const arrayBuffer = await image.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
 
-    await fs.writeFile(`./public/uploads/${image.name}`, buffer);
+    const imageName = getFileNameOnly(image.name);
+    const imageExtension = getFileExtension(image.name) as string;
+
+    const imageLink = formatImageName(imageName, imageExtension);
+
+    await fs.writeFile(`./public/uploads/${imageLink}`, buffer);
     await db.campaign.create({
       data: {
         name: values.name,
@@ -816,9 +855,15 @@ export async function updateCampaign(
 
   if (image && !coverImage) {
     const arrayBuffer = await image.arrayBuffer();
+
+    const imageName = getFileNameOnly(image.name);
+    const imageExtension = getFileExtension(image.name) as string;
+
+    const imageLink = formatImageName(imageName, imageExtension);
+
     const buffer = new Uint8Array(arrayBuffer);
 
-    await fs.writeFile(`./public/uploads/${image.name}`, buffer);
+    await fs.writeFile(`./public/uploads/${imageLink}`, buffer);
     await db.campaign.update({
       where: {
         id: campaignId,
@@ -827,15 +872,21 @@ export async function updateCampaign(
         name: values.name,
         description: values.description,
         featured: values.featured,
-        image: image.name,
+        image: imageLink,
       },
     });
   }
 
   if (coverImage && !image) {
     const arrayBuffer = await coverImage.arrayBuffer();
+
+    const coverImageName = getFileNameOnly(coverImage.name);
+    const coverImageExtension = getFileExtension(coverImage.name) as string;
+
+    const coverImageLink = formatImageName(coverImageName, coverImageExtension);
+
     const buffer = new Uint8Array(arrayBuffer);
-    await fs.writeFile(`./public/uploads/${coverImage.name}`, buffer);
+    await fs.writeFile(`./public/uploads/${coverImageLink}`, buffer);
 
     await db.campaign.update({
       where: {
@@ -845,19 +896,32 @@ export async function updateCampaign(
         name: values.name,
         description: values.description,
         featured: values.featured,
-        coverImg: coverImage.name,
+        coverImg: coverImageLink,
       },
     });
   }
 
   if (coverImage && image) {
     const arrayBuffer = await coverImage.arrayBuffer();
+
+    const coverImageName = getFileNameOnly(coverImage.name);
+    const coverImageExtension = getFileExtension(coverImage.name) as string;
+
+    const coverImageLink = formatImageName(coverImageName, coverImageExtension);
+
     const buffer = new Uint8Array(arrayBuffer);
-    await fs.writeFile(`./public/uploads/${coverImage.name}`, buffer);
+
+    await fs.writeFile(`./public/uploads/${coverImageLink}`, buffer);
 
     const arrayBuffer2 = await image.arrayBuffer();
+
+    const imageName = getFileNameOnly(image.name);
+    const imageExtension = getFileExtension(image.name) as string;
+
+    const imageLink = formatImageName(imageName, imageExtension);
+
     const buffer2 = new Uint8Array(arrayBuffer2);
-    await fs.writeFile(`./public/uploads/${image.name}`, buffer2);
+    await fs.writeFile(`./public/uploads/${imageLink}`, buffer2);
 
     await db.campaign.update({
       where: {
@@ -867,8 +931,8 @@ export async function updateCampaign(
         name: values.name,
         description: values.description,
         featured: values.featured,
-        image: image.name,
-        coverImg: coverImage.name,
+        image: imageLink,
+        coverImg: coverImageLink,
       },
     });
   }
@@ -903,7 +967,7 @@ export async function createTable(values: z.infer<typeof createTableSchema>, ven
   const options: Options = {
     width: 1280,
     height: 1280,
-    data: `http://localhost:3000/${venue.name}?table=${table.id}`,
+    data: `http://localhost:3000/${venue.slug}?table=${table.id}`,
     type: 'svg',
     image: undefined,
     dotsOptions: {
@@ -923,7 +987,7 @@ export async function createTable(values: z.infer<typeof createTableSchema>, ven
 
   await db.qRCode.create({
     data: {
-      code: `http://localhost:3000/${venue.name}?table=${table.id}`,
+      code: `http://localhost:3000/${venue.slug}?table=${table.id}`,
       settings: options,
       venueId: venue.id,
       tableId: table.id,
@@ -1013,8 +1077,14 @@ export async function updateQRAction(options: Options, formData: FormData, qrCod
 
   if (image) {
     const arrayBuffer = await image.arrayBuffer();
+
+    const imageName = getFileNameOnly(image.name);
+    const imageExtension = getFileExtension(image.name) as string;
+
+    const imageLink = formatImageName(imageName, imageExtension);
+
     const buffer = new Uint8Array(arrayBuffer);
-    await fs.writeFile(`./public/qr/logo/${image.name}`, buffer);
+    await fs.writeFile(`./public/qr/logo/${imageLink}`, buffer);
 
     await db.qRCode.update({
       where: {
@@ -1022,7 +1092,7 @@ export async function updateQRAction(options: Options, formData: FormData, qrCod
       },
       data: {
         settings: options,
-        image: image.name,
+        image: imageLink,
       },
     });
   } else {
@@ -1084,8 +1154,14 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
 
   if (logoImage && !venueImage) {
     const arrayBuffer = await logoImage.arrayBuffer();
+
+    const logoImageName = getFileNameOnly(logoImage.name);
+    const logoImageExtension = getFileExtension(logoImage.name) as string;
+
+    const logoImageLink = formatImageName(logoImageName, logoImageExtension);
+
     const buffer = new Uint8Array(arrayBuffer);
-    await fs.writeFile(`./public/uploads/${logoImage.name}`, buffer);
+    await fs.writeFile(`./public/uploads/${logoImageLink}`, buffer);
 
     const { branchName, address, currency } = values;
 
@@ -1097,15 +1173,21 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
         branchName: branchName,
         currency: currency,
         address: address,
-        logo: logoImage.name,
+        logo: logoImageLink,
       },
     });
   }
 
   if (!logoImage && venueImage) {
     const arrayBuffer = await venueImage.arrayBuffer();
+
+    const venueImageName = getFileNameOnly(venueImage.name);
+    const venueImageExtension = getFileExtension(venueImage.name) as string;
+
+    const venueImageLink = formatImageName(venueImageName, venueImageExtension);
+
     const buffer = new Uint8Array(arrayBuffer);
-    await fs.writeFile(`./public/uploads/${venueImage.name}`, buffer);
+    await fs.writeFile(`./public/uploads/${venueImageLink}`, buffer);
 
     const { branchName, address, currency } = values;
 
@@ -1117,19 +1199,31 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
         branchName: branchName,
         currency: currency,
         address: address,
-        image: venueImage.name,
+        image: venueImageLink,
       },
     });
   }
 
   if (logoImage && venueImage) {
     const arrayBuffer1 = await venueImage.arrayBuffer();
+
+    const venueImageName = getFileNameOnly(venueImage.name);
+    const venueImageExtension = getFileExtension(venueImage.name) as string;
+
+    const venueImageLink = formatImageName(venueImageName, venueImageExtension);
+
     const buffer1 = new Uint8Array(arrayBuffer1);
-    await fs.writeFile(`./public/uploads/${venueImage.name}`, buffer1);
+    await fs.writeFile(`./public/uploads/${venueImageLink}`, buffer1);
 
     const arrayBuffer2 = await logoImage.arrayBuffer();
+
+    const logoImageName = getFileNameOnly(logoImage.name);
+    const logoImageExtension = getFileExtension(logoImage.name) as string;
+
+    const logoImageLink = formatImageName(logoImageName, logoImageExtension);
+
     const buffer2 = new Uint8Array(arrayBuffer2);
-    await fs.writeFile(`./public/uploads/${logoImage.name}`, buffer2);
+    await fs.writeFile(`./public/uploads/${logoImageLink}`, buffer2);
 
     const { branchName, address, currency } = values;
 
@@ -1141,8 +1235,8 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
         branchName: branchName,
         currency: currency,
         address: address,
-        logo: logoImage.name,
-        image: venueImage.name,
+        logo: logoImageLink,
+        image: venueImageLink,
       },
     });
   }
@@ -1198,8 +1292,14 @@ export async function updateProfileSettingsAction(values: any, formData: FormDat
 
   if (image) {
     const arrayBuffer = await image.arrayBuffer();
+
+    const imageName = getFileNameOnly(image.name);
+    const imageExtension = getFileExtension(image.name) as string;
+
+    const imageLink = formatImageName(imageName, imageExtension);
+
     const buffer = new Uint8Array(arrayBuffer);
-    await fs.writeFile(`./public/uploads/${image.name}`, buffer);
+    await fs.writeFile(`./public/uploads/${imageLink}`, buffer);
 
     await db.user.update({
       where: {
@@ -1207,7 +1307,7 @@ export async function updateProfileSettingsAction(values: any, formData: FormDat
       },
       data: {
         name: values.username,
-        image: image.name,
+        image: imageLink,
       },
     });
   }

@@ -9,13 +9,26 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { PiBell, PiLightning, PiQuestion, PiSparkleFill } from 'react-icons/pi';
 import Link from 'next/link';
+import { auth } from '@/auth';
+import { db } from '@/lib/db';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+
+  const venue = await db.venue.findFirst({
+    where: {
+      userId: session?.user.id,
+      isActive: true,
+    },
+  });
+
+  console.log('VENUE DATA:', venue);
+
   return (
     <>
       <NextTopLoader color="#ff682f" showSpinner={true} />
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar venue={venue} />
         <SidebarInset>
           <header className="flex h-14 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-14">
             <div className="flex w-full items-center justify-between gap-2 px-4">

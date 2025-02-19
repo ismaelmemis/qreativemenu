@@ -24,3 +24,19 @@ export const getUserById = async (id: string) => {
     return null;
   }
 };
+
+export function getInitials(text: string) {
+  if (!text) return '';
+
+  const words = text.split(' ').filter((word) => word.length > 0);
+
+  if (words.length === 0) return '';
+
+  let initials = words[0][0].toUpperCase();
+
+  if (words.length > 1) {
+    initials += words[1][0].toUpperCase();
+  }
+
+  return initials;
+}

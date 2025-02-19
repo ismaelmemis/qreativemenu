@@ -109,10 +109,19 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [userData, setUserData] = React.useState({});
   const pathname = usePathname();
   const router = useRouter();
 
-  React.useEffect(() => {}, []);
+  React.useEffect(() => {
+    setUserData({
+      venue: {
+        name: props?.venue?.name,
+        email: props?.venue?.branchName,
+        avatar: '',
+      },
+    });
+  }, []);
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -141,7 +150,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarHeader>
       <SidebarContent className="mt-3">
-        <NavUser user={data.user} />
+        <NavUser user={userData.venue} />
         {/* <TeamSwitcher teams={data.teams} /> */}
         <NavMain items={data.navMain} path={pathname} />
         <NavMenu items={data.navMenu} path={pathname} />
