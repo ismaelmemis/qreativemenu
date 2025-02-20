@@ -100,8 +100,7 @@ export default async function Info({ params }: { params: { venue: string } }) {
               theme === 'dark' && 'text-white'
             }`}
           >
-            İtalya’nın eşsiz mutfağını ayağınıza getiriyoruz! Restoranımızda, Akdeniz&apos;in sıcak
-            dokusunu hissettiren, İtalyan kültürüne özgü otantik lezzetler sunuyoruz...
+            {venue?.description}
           </p>
         </div>
         <div className="mt-6 flex flex-col gap-2 xs:gap-3 pb-20">
@@ -191,10 +190,12 @@ export default async function Info({ params }: { params: { venue: string } }) {
                   <div className="relative">
                     <Input
                       readOnly
-                      className="pe-5 xs:pe-9 w-48 xs:w-80 border border-orange-600"
+                      className={`pe-5 xs:pe-9 w-48 xs:w-80 border border-orange-600 text-xs ${
+                        theme === 'dark' && 'text-white'
+                      }`}
                       value={wifiPassword || ''}
                       placeholder=""
-                      type="email"
+                      type="text"
                     />
                     <button
                       className="absolute inset-y-0 end-0 flex h-full w-32 items-center justify-center rounded-e-lg border border-transparent text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"

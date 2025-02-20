@@ -8,6 +8,7 @@ import { db } from '@/lib/db';
 import Image from 'next/image';
 import Link from 'next/link';
 import MenuHeader from '@/components/mobile/common/menu-header';
+import { generateSlugWithLine } from '@/lib/slugify';
 
 async function getMenu(menuId: string) {
   const menu = await db.menu.findUnique({
@@ -70,11 +71,10 @@ export default async function Menu({ params }: { params: { venue: string; menu_i
                   <div className="w-full h-full absolute bg-gradient-to-r from-stone-900/60 to-stone-800/30 left-0 top-0 rounded-2xl z-10"></div>
                   <div className="relative z-20 w-64">
                     <h1 className="text-white font-bold text-[14px] xs:text-[25px] leading-tight">
-                      Hafta Sonu Şöleni!
+                      {featuredCampaign?.name}
                     </h1>
                     <p className="text-white mt-0.5 xs:mt-1.5 mb-3 w-36 xs:w-60 text-[9px] xs:text-[15px] font-normal 2xl:leading-relaxed">
-                      Cumartesi - Pazar günleri karışık pizzalarımızda %40 indirim fırsatını
-                      kaçırmayın!
+                      {featuredCampaign?.description}
                     </p>
                   </div>
                   <div className="z-20 text-white absolute bottom-2.5 right-5 xs:right-6 xs:bottom-4 top flex justify-end">
@@ -100,7 +100,7 @@ export default async function Menu({ params }: { params: { venue: string; menu_i
                       <MenuCategoryItem
                         key={item.id}
                         categoryName={item.text}
-                        link={item.text.toLowerCase()}
+                        link={generateSlugWithLine(item.text)}
                         image={item.data.image}
                         menuId={params.menu_id}
                         theme={theme ?? 'light'}

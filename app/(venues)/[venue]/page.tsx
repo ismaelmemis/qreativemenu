@@ -32,7 +32,7 @@ export default async function Venue({ params }: { params: { venue: string } }) {
       <div className="absolute top-28 xs:top-40 left-1/2 transform -translate-x-1/2">
         {coverLogo && (
           <Image
-            src={`/${coverLogo}`}
+            src={`/api/uploads/${coverLogo}`}
             width={300}
             height={300}
             alt="Logo"

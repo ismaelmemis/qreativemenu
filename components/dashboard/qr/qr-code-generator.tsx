@@ -76,6 +76,8 @@ export default function QRCodeGenerator({
 }) {
   const [imageInput, setImageInput] = useState<FormData>(new FormData());
 
+  console.log(qrCodeImage);
+
   const [selectedBgColor, setSelectedBgColor] = useState(
     settings?.backgroundOptions?.color || '#FFFFFF'
   );
@@ -114,9 +116,9 @@ export default function QRCodeGenerator({
   useEffect(() => {
     if (qrCodeImage) {
       qrCodeLogo[7] = {
-        value: `/qr/logo/${qrCodeImage}`,
+        value: `/api/qr/${qrCodeImage}`,
         label: 'Custom',
-        image: `/qr/logo/${qrCodeImage}`,
+        image: `/api/qr/${qrCodeImage}`,
       };
     }
     setQrCode(new QRCodeStyling(settings));
@@ -204,6 +206,14 @@ export default function QRCodeGenerator({
     });
   }, [selectedImage]);
 
+  useEffect(() => {
+    qrCodeLogo[7] = {
+      value: `/api/qr/${qrCodeImage}`,
+      label: 'Custom',
+      image: `/api/qr/${qrCodeImage}`,
+    };
+  }, [qrCodeImage]);
+
   const onDownloadClick = () => {
     if (!qrCode) return;
     qrCode.download({
@@ -217,15 +227,15 @@ export default function QRCodeGenerator({
       if (file instanceof File) {
         console.log(file.name);
         qrCodeLogo[7] = {
-          value: `/qr/logo/${file.name}`,
+          value: `/api/qr/${file.name}`,
           label: 'Custom',
-          image: `/qr/logo/${file.name}`,
+          image: `/api/qr/${file.name}`,
         };
 
         setOptions((prevOpt) => {
           return {
             ...prevOpt,
-            image: `/qr/logo/${file.name}`,
+            image: `/api/qr/${file.name}`,
           };
         });
       }

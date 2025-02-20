@@ -50,8 +50,8 @@ export default function MainBranchForm({ venueData }: { venueData: Venue }) {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof updateBranchSettings>) {
-    const { branchName, currency, address } = values;
-    const actionValues = { branchName, currency, address };
+    const { branchName, currency, address, description } = values;
+    const actionValues = { branchName, currency, address, description };
 
     console.log('Form Data Manual', formDataManual.get('venueImage'));
 

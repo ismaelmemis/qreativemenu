@@ -10,6 +10,7 @@ import { createTableAreaSchema, createTableSchema } from '@/lib/schemas';
 import { Options } from 'qr-code-styling';
 import { compareSync, hashSync } from 'bcrypt-ts';
 import { formatImageName, getFileExtension, getFileNameOnly } from '@/utils/images';
+import { generateSlugWithLine } from '@/lib/slugify';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createCategory(values: any, formData: FormData) {
@@ -36,7 +37,7 @@ export async function createCategory(values: any, formData: FormData) {
         menuId: menuId,
         image: imageFileLink,
         description: description,
-        slug: name.toLowerCase(),
+        slug: generateSlugWithLine(name),
       },
     });
 
@@ -104,7 +105,7 @@ export async function createCategory(values: any, formData: FormData) {
         labels: '',
         menuId: menuId,
         description: description,
-        slug: name.toLowerCase(),
+        slug: generateSlugWithLine(name),
       },
     });
 
@@ -470,7 +471,7 @@ export async function editCategory(values: any, catId: string, formData: FormDat
       data: {
         name: name,
         description: description,
-        slug: name.toLowerCase(),
+        slug: generateSlugWithLine(name),
       },
     });
   } else {
@@ -1078,13 +1079,8 @@ export async function updateQRAction(options: Options, formData: FormData, qrCod
   if (image) {
     const arrayBuffer = await image.arrayBuffer();
 
-    const imageName = getFileNameOnly(image.name);
-    const imageExtension = getFileExtension(image.name) as string;
-
-    const imageLink = formatImageName(imageName, imageExtension);
-
     const buffer = new Uint8Array(arrayBuffer);
-    await fs.writeFile(`./public/qr/logo/${imageLink}`, buffer);
+    await fs.writeFile(`./public/qr/${image.name}`, buffer);
 
     await db.qRCode.update({
       where: {
@@ -1092,7 +1088,7 @@ export async function updateQRAction(options: Options, formData: FormData, qrCod
       },
       data: {
         settings: options,
-        image: imageLink,
+        image: image.name,
       },
     });
   } else {
@@ -1138,7 +1134,7 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
   console.log('Logo Image:', logoImage, 'Venue Image:', venueImage);
 
   if (!logoImage && !venueImage) {
-    const { branchName, address, currency } = values;
+    const { branchName, address, currency, description } = values;
 
     await db.venue.update({
       where: {
@@ -1148,6 +1144,7 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
         branchName: branchName,
         currency: currency,
         address: address,
+        description: description,
       },
     });
   }
@@ -1163,7 +1160,7 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
     const buffer = new Uint8Array(arrayBuffer);
     await fs.writeFile(`./public/uploads/${logoImageLink}`, buffer);
 
-    const { branchName, address, currency } = values;
+    const { branchName, address, currency, description } = values;
 
     await db.venue.update({
       where: {
@@ -1174,6 +1171,7 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
         currency: currency,
         address: address,
         logo: logoImageLink,
+        description: description,
       },
     });
   }
@@ -1189,7 +1187,7 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
     const buffer = new Uint8Array(arrayBuffer);
     await fs.writeFile(`./public/uploads/${venueImageLink}`, buffer);
 
-    const { branchName, address, currency } = values;
+    const { branchName, address, currency, description } = values;
 
     await db.venue.update({
       where: {
@@ -1200,6 +1198,7 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
         currency: currency,
         address: address,
         image: venueImageLink,
+        description: description,
       },
     });
   }
@@ -1225,7 +1224,7 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
     const buffer2 = new Uint8Array(arrayBuffer2);
     await fs.writeFile(`./public/uploads/${logoImageLink}`, buffer2);
 
-    const { branchName, address, currency } = values;
+    const { branchName, address, currency, description } = values;
 
     await db.venue.update({
       where: {
@@ -1237,6 +1236,7 @@ export async function updateMainBranchSettings(values: any, venueId: string, for
         address: address,
         logo: logoImageLink,
         image: venueImageLink,
+        description: description,
       },
     });
   }

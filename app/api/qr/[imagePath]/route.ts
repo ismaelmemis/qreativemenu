@@ -4,7 +4,7 @@ import path from 'path';
 
 export async function GET(request: NextRequest, { params }: { params: { imagePath: string } }) {
   const imagePath = params.imagePath;
-  const filePath = path.join(process.cwd(), 'public/uploads', imagePath);
+  const filePath = path.join(process.cwd(), 'public/qr', imagePath);
 
   try {
     const fileBuffer = await fs.readFile(filePath);

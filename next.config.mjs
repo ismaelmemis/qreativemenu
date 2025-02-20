@@ -6,6 +6,10 @@ const nextConfig = {
         source: '/uploads/:path*',
         destination: '/api/uploads?path=:path*',
       },
+      {
+        source: '/qr/:path*',
+        destination: '/api/qr?path=:path*',
+      },
     ];
   },
   eslint: {

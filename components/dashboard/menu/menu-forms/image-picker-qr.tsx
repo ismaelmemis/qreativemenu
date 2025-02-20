@@ -79,7 +79,7 @@ export default function ImagePickerQR({
           <>
             {defaultImage ? (
               <Image
-                src={`/api/qr/logo/${defaultImage}`}
+                src={`/api/qr/${defaultImage}`}
                 fill
                 className={`w-[140px] h-[124px] rounded-lg ${
                   formName || containImage ? 'object-contain p-2' : 'object-cover'
